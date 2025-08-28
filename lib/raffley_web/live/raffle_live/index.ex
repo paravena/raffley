@@ -4,7 +4,11 @@ defmodule RaffleyWeb.RaffleLive.Index do
   import RaffleyWeb.CustomComponents
 
   def mount(_params, _session, socket) do
-    socket = stream(socket, :raffles, Raffles.list_raffles())
+    socket =
+      socket
+      |> stream(:raffles, Raffles.list_raffles())
+      |> assign(:form, to_form(%{}))
+
     {:ok, socket}
   end
 
@@ -17,10 +21,31 @@ defmodule RaffleyWeb.RaffleLive.Index do
           To Be Revealed Tomorrow {vibe}
         </:details>
       </.banner>
+      <.filter_form form={@form} />
       <div class="raffles" id="raffles" phx-update="stream">
         <.raffle_card :for={{dom_id, raffle} <- @streams.raffles} raffle={raffle} id={dom_id} />
       </div>
     </div>
+    """
+  end
+
+  def filter_form(assigns) do
+    ~H"""
+    <.form for={@form} id="filter-form" phx-change="filter">
+      <.input field={@form[:q]} placeholder="Search..." autocomplete="off" />
+      <.input
+        type="select"
+        field={@form[:status]}
+        prompt="Status"
+        options={Ecto.Enum.values(Raffles.Raffle, :status)}
+      />
+      <.input
+        type="select"
+        field={@form[:sort_by]}
+        prompt="Sort By"
+        options={[:prize, :ticket_price]}
+      />
+    </.form>
     """
   end
 
@@ -42,5 +67,14 @@ defmodule RaffleyWeb.RaffleLive.Index do
       </div>
     </.link>
     """
+  end
+
+  def handle_event("filter", params, socket) do
+    socket =
+      socket
+      |> assign(:form, to_form(params))
+      |> stream(:raffles, Raffles.filter_raffles(params), reset: true)
+
+    {:noreply, socket}
   end
 end

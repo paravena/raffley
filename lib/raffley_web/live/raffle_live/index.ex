@@ -4,12 +4,16 @@ defmodule RaffleyWeb.RaffleLive.Index do
   import RaffleyWeb.CustomComponents
 
   def mount(_params, _session, socket) do
+    {:ok, socket}
+  end
+
+  def handle_params(params, _uri, socket) do
     socket =
       socket
-      |> stream(:raffles, Raffles.list_raffles())
-      |> assign(:form, to_form(%{}))
+      |> stream(:raffles, Raffles.filter_raffles(params), reset: true)
+      |> assign(:form, to_form(params))
 
-    {:ok, socket}
+    {:noreply, socket}
   end
 
   def render(assigns) do
@@ -49,6 +53,9 @@ defmodule RaffleyWeb.RaffleLive.Index do
           "Price: Low to High": "ticket_price_asc"
         ]}
       />
+      <.link patch={~p"/raffles"}>
+        Reset
+      </.link>
     </.form>
     """
   end
@@ -74,11 +81,12 @@ defmodule RaffleyWeb.RaffleLive.Index do
   end
 
   def handle_event("filter", params, socket) do
-    socket =
-      socket
-      |> assign(:form, to_form(params))
-      |> stream(:raffles, Raffles.filter_raffles(params), reset: true)
+    params =
+      params
+      |> Map.take(~w(q status sort_by))
+      |> Map.reject(fn {_, v} -> v == "" end)
 
+    socket = push_patch(socket, to: ~p"/raffles?#{params}")
     {:noreply, socket}
   end
 end

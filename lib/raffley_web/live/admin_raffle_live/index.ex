@@ -40,8 +40,12 @@ defmodule RaffleyWeb.AdminRaffleLive.Index do
             Edit
           </.link>
         </:action>
-        <:action :let={{_dom_id, raffle}}>
-          <.link phx-click="delete" phx-value-id={raffle.id} data-confirm="Are you sure?">
+        <:action :let={{dom_id, raffle}}>
+          <.link
+            phx-click={delete_and_hide(dom_id, raffle)}
+            phx-disable-with="Deleting..."
+            data-confirm="Are you sure?"
+          >
             Delete
           </.link>
         </:action>
@@ -54,5 +58,10 @@ defmodule RaffleyWeb.AdminRaffleLive.Index do
     raffle = Admin.get_raffle!(id)
     {:ok, _} = Admin.delete_raffle(raffle)
     {:noreply, stream_delete(socket, :raffles, raffle)}
+  end
+
+  def delete_and_hide(dom_id, raffle) do
+    JS.push("delete", value: %{id: raffle.id})
+    |> JS.add_class("opacity-50", to: "##{dom_id}")
   end
 end

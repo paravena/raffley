@@ -7,6 +7,8 @@ defmodule Raffley.Charities.Charity do
     field :slug, :string
 
     timestamps(type: :utc_datetime)
+
+    has_many :raffles, Raffley.Raffles.Raffle
   end
 
   @doc false

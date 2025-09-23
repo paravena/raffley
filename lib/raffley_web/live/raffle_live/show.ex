@@ -8,7 +8,7 @@ defmodule RaffleyWeb.RaffleLive.Show do
   end
 
   def handle_params(%{"id" => id}, _uri, socket) do
-    raffle = Raffles.get_raffle!(id)
+    raffle = Raffles.get_raffle_with_charity!(id)
 
     socket =
       socket
@@ -30,7 +30,10 @@ defmodule RaffleyWeb.RaffleLive.Show do
         <section>
           <.badge status={@raffle.status} />
           <header>
-            <h2>{@raffle.prize}</h2>
+            <div>
+              <h2>{@raffle.prize}</h2>
+              <h3>{@raffle.charity.name}</h3>
+            </div>
             <div class="price">
               ${@raffle.ticket_price} / ticket
             </div>

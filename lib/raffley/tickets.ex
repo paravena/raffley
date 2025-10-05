@@ -7,6 +7,8 @@ defmodule Raffley.Tickets do
   alias Raffley.Repo
 
   alias Raffley.Tickets.Ticket
+  alias Raffley.Accounts.User
+  alias Raffley.Raffles.Raffle
 
   @doc """
   Returns the list of tickets.
@@ -49,8 +51,8 @@ defmodule Raffley.Tickets do
       {:error, %Ecto.Changeset{}}
 
   """
-  def create_ticket(attrs \\ %{}) do
-    %Ticket{}
+  def create_ticket(%Raffle{} = raffle, %User{} = user, attrs \\ %{}) do
+    %Ticket{raffle: raffle, user: user, price: raffle_ticket_price}
     |> Ticket.changeset(attrs)
     |> Repo.insert()
   end

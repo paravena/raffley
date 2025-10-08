@@ -42,8 +42,8 @@ defmodule RaffleyWeb.Router do
 
     live_session :admin,
       on_mount: [
-        {Raffley.UserAuth, :ensure_authenticated},
-        {Raffley.UserAuth, :ensure_admin}
+        {RaffleyWeb.UserAuth, :ensure_authenticated},
+        {RaffleyWeb.UserAuth, :ensure_admin}
       ] do
       live "/admin/raffles", AdminRaffleLive.Index
       live "/admin/raffles/new", AdminRaffleLive.Form, :new

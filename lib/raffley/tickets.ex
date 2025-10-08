@@ -52,7 +52,7 @@ defmodule Raffley.Tickets do
 
   """
   def create_ticket(%Raffle{} = raffle, %User{} = user, attrs \\ %{}) do
-    %Ticket{raffle: raffle, user: user, price: raffle_ticket_price}
+    %Ticket{raffle: raffle, user: user, price: raffle.ticket_price}
     |> Ticket.changeset(attrs)
     |> Repo.insert()
   end

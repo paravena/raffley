@@ -5,6 +5,7 @@ defmodule Raffley.Tickets.Ticket do
   schema "tickets" do
     field :comment, :string
     field :price, :integer
+
     belongs_to :raffle, Raffley.Raffles.Raffle
     belongs_to :user, Raffley.Accounts.User
 

@@ -66,6 +66,14 @@ defmodule Raffley.Raffles do
     Repo.get!(Raffle, id)
   end
 
+  def list_tickets(raffle) do
+    raffle
+    |> Ecto.assoc(:tickets)
+    |> preload(:user)
+    |> order_by(desc: :inserted_at)
+    |> Repo.all()
+  end
+
   def get_raffle_with_charity!(id) do
     get_raffle!(id) |> Repo.preload(:charity)
   end

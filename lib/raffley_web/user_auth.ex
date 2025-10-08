@@ -227,7 +227,7 @@ defmodule RaffleyWeb.UserAuth do
   end
 
   def require_admin(conn, _opts) do
-    if conn.assigns.current_user.username.is_admin do
+    if conn.assigns.current_user.is_admin do
       conn
     else
       conn

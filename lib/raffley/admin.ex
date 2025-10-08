@@ -1,6 +1,7 @@
 defmodule Raffley.Admin do
   alias Raffley.Repo
   alias Raffley.Raffles.Raffle
+  alias Raffley.Raffles
   import Ecto.Query
 
   def list_raffles do
@@ -27,6 +28,15 @@ defmodule Raffley.Admin do
     raffle
     |> Raffle.changeset(attr)
     |> Repo.update()
+    |> case do
+      {:ok, raffle} ->
+        raffle = raffle |> Repo.preload(:charity)
+        Raffles.broadcast(raffle.id, {:raffle_updated, raffle})
+        {:ok, raffle}
+
+      {:error, _} = error ->
+        error
+    end
   end
 
   def delete_raffle(%Raffle{} = raffle) do
